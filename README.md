@@ -118,13 +118,11 @@ SECRET_KEY=your-secret-key
 DEBUG=True
 ALLOWED_HOSTS = "*"
 
-DB
 NAME=db-name
 USER=db-user
 PASSWORD-db-password
 HOST=db-hose
 
-SMTP
 EMAIL_USER=your email address
 EMAIL_PASSWORD=your email password
 ```
