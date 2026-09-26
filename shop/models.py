@@ -25,6 +25,7 @@ class ProductModel(models.Model):
     description = models.TextField()
     brief_description = models.TextField()
     category = models.ForeignKey(CategoryModel, on_delete=models.PROTECT, related_name="category_products")
+    avg_rate = models.FloatField(default=0.0)
 
     status = models.BooleanField(default=False)
     created_date = models.DateTimeField(auto_now_add=True)
