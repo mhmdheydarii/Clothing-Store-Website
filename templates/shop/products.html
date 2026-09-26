@@ -29,7 +29,8 @@
               <a href="?" class="chip {% if not request.GET.category %}active{% endif %}">همه</a>
 
               {% for cat in categories %}
-              <a href="?category={{ cat.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" name="category" id="category-filter"
+              <a href="?category={{ cat.slug }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                name="category" id="category-filter"
                 class="chip {% if request.GET.category == cat.slug %}active{% endif %}">
                 {{ cat.name }}
               </a>
@@ -55,7 +56,7 @@
           </span>
           <form action=".">
             {% if request.GET.category %}
-                <input type="hidden" name="category" value="{{ request.GET.category }}">
+            <input type="hidden" name="category" value="{{ request.GET.category }}">
             {% endif %}
             <select class="sort-select" name="sort" onchange="this.form.submit()">
               <option value="">مرتب‌سازی پیش‌فرض</option>
@@ -93,27 +94,37 @@
               <a href="{% url 'shop:product-detail' slug=object.slug %}" style="color:inherit;">
                 <h3 class="product-name">{{ object.name }}</h3>
               </a>
+
+              <div class="product-rating" style="display:flex; align-items:center; gap:6px; margin:4px 0;">
+                <div class="stars-display" style="display:flex; direction:ltr;">
+                  {% for i in "12345" %}
+                  <span class="star"
+                    style="font-size:18px; font-weight:bold; {% if forloop.counter <= object.avg_rate %}color:#FFC107;{% else %}color:#d9d9d9;{% endif %}">★</span>
+                  {% endfor %}
+                </div>
+                <span style="font-size:14px; font-weight:600; color:#666;">
+                  ({{ object.avg_rate|default:"0"|floatformat:1 }})
+                </span>
+              </div>
               <div class="swatches">
                 {% for color in object.get_colors %}
-                <span class="swatch" style="background:{{ color.code }}"
-                  title="{{ color.name }}"></span>
+                <span class="swatch" style="background:{{ color.code }}" title="{{ color.name }}"></span>
                 {% endfor %}
               </div>
               <div class="product-bottom">
                 {% if object.discount_percent %}
                 <del class="product-price formatted-price">
-                    <span>{{ object.price }}</span>
+                  {{ object.price }}
                 </del>
                 <div class="formatted-price product-price ">
-                  {{ object.get_price }}
+                  {{ object.get_price }}<span></span>
                 </div>
                 {% else %}
                 <div class="formatted-price product-price">
-                  <span>{{ object.price}}</span>
+                  {{ object.price}}<span></span>
                 </div>
                 {% endif %}
               </div>
-            </div>
           </article>
           {% empty %}
           <p style="grid-column:1/-1; text-align:center; color:#8a8275; padding:60px 0;">
@@ -126,21 +137,21 @@
         <!-- /PRODUCT GRID -->
 
         {% if page_obj.has_other_pages %}
-          <div class="pagination" style="display:flex; justify-content:center; gap:8px; margin-top:50px;">
-            {% if page_obj.has_previous %}
-            <button class="chip" onclick="changePage(`{{page_obj.previous_page_number}}`)">قبلی</button>
-            {% endif %}
-            {% for i in page_obj.paginator.page_range %}
-              {% if i == page_obj.number %}
-                <button class="chip active" onclick="changePage(`{{i}}`)">{{i}}</button>
-              {% else %}
-                <button class="chip" onclick="changePage(`{{i}}`)">{{i}}</button>
-              {% endif %}
-            {% endfor %}
-            {% if page_obj.has_next %}
-              <button class="chip" onclick="changePage(`{{page_obj.next_page_number}}`)">بعدی</button>
-            {% endif %}
-          </div>
+        <div class="pagination" style="display:flex; justify-content:center; gap:8px; margin-top:50px;">
+          {% if page_obj.has_previous %}
+          <button class="chip" onclick="changePage(`{{page_obj.previous_page_number}}`)">قبلی</button>
+          {% endif %}
+          {% for i in page_obj.paginator.page_range %}
+          {% if i == page_obj.number %}
+          <button class="chip active" onclick="changePage(`{{i}}`)">{{i}}</button>
+          {% else %}
+          <button class="chip" onclick="changePage(`{{i}}`)">{{i}}</button>
+          {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+          <button class="chip" onclick="changePage(`{{page_obj.next_page_number}}`)">بعدی</button>
+          {% endif %}
+        </div>
         {% endif %}
 
       </div>

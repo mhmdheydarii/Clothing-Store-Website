@@ -33,6 +33,17 @@
                     <a href="{% url 'shop:product-detail' slug=product.slug %}" style="color:inherit;">
                         <h3 class="product-name">{{ product.name }}</h3>
                     </a>
+                    <div class="product-rating" style="display:flex; align-items:center; gap:6px; margin:4px 0;">
+                        <div class="stars-display" style="display:flex; direction:ltr;">
+                            {% for i in "12345" %}
+                            <span class="star"
+                                style="font-size:18px; font-weight:bold; {% if forloop.counter <= product.avg_rate %}color:#FFC107;{% else %}color:#d9d9d9;{% endif %}">★</span>
+                            {% endfor %}
+                        </div>
+                        <span style="font-size:14px; font-weight:600; color:#666;">
+                            ({{ product.avg_rate|default:"0"|floatformat:1 }})
+                        </span>
+                    </div>
                     <div class="swatches">
                         {% for variant in product.product_variants.all %}
                         <span class="swatch" style="background:{{ variant.color.code }}"
@@ -57,9 +68,9 @@
             </article>
             <!-- /کارت نمونه -->
             {% empty %}
-                <p style="grid-column:1/-1; text-align:center; color:#8a8275; padding:60px 0;">
-                   درحال حاضر محصولی در تخفیفات ویژه قرار ندارد.
-                </p>
+            <p style="grid-column:1/-1; text-align:center; color:#8a8275; padding:60px 0;">
+                درحال حاضر محصولی در تخفیفات ویژه قرار ندارد.
+            </p>
             {% endfor %}
         </div>
 

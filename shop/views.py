@@ -3,7 +3,7 @@ from django.views.generic import ListView, DetailView
 from django.db.models import Prefetch
 from django.core.exceptions import FieldError
 from .models import ProductModel, ProductVariant, CategoryModel, SizeProductModel, ColorProductModel
-
+from review.models import ReviewModel
 # Create your views here.
 
 class ProductsView(ListView):
@@ -34,6 +34,7 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         product = self.get_object()
+        context["review"] = ReviewModel.objects.filter(product=product, status=ReviewModel.ReviewStatus.ACCEPTED.value)
         context["sizes"] = SizeProductModel.objects.filter(size_products__product=product).distinct()
         context["colors"] = ColorProductModel.objects.filter(color_products__product=product).distinct()
         size = self.request.GET.get("size")

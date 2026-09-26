@@ -21,6 +21,24 @@
             <a href="{% url 'shop:product-detail' slug=product.slug %}" style="color:inherit;">
                 <h3 class="product-name">{{product.name}}</h3>
             </a>
+            {% for similar_product in similar_products %}
+                <div class="product-rating" style="display:flex; align-items:center; gap:6px; margin:4px 0;">
+                    <div class="stars-display" style="display:flex; direction:ltr;">
+                        {% for i in "12345" %}
+                        <span class="star"
+                            style="font-size:18px; font-weight:bold; {% if forloop.counter <= similar_product.avg_rate %}color:#FFC107;{% else %}color:#d9d9d9;{% endif %}">★</span>
+                        {% endfor %}
+                    </div>
+                    <span style="font-size:14px; font-weight:600; color:#666;">
+                        ({{ similar_product.avg_rate|default:"0"|floatformat:1 }})
+                    </span>
+                </div>
+            {% endfor %}
+            <div class="swatches">
+                {% for color in product.get_colors %}
+                <span class="swatch" style="background:{{ color.code }}" title="{{ color.name }}"></span>
+                {% endfor %}
+            </div>
             <div class="product-bottom">
                 {% if product.discount_percent %}
                 <del class="product-price formatted-price">

@@ -144,7 +144,6 @@
     <div class="tabs-bar">
       <button class="tab-btn active" data-tab="desc">توضیحات</button>
       <button class="tab-btn" data-tab="care">دیدگاه‌ها</button>
-      <button class="tab-btn" data-tab="size">جدول سایز</button>
     </div>
 
     <div class="tab-panel active" data-panel="desc">
@@ -156,127 +155,95 @@
       <div class="comments-section" style="margin-top:40px;">
         <h3>دیدگاه‌ها و امتیاز کاربران</h3>
 
-        <div class="comments-summary" style="margin-bottom:20px;">
-          <span class="stars">★★★★☆</span>
-          <span>(۴.۲ از ۵ · ۱۲ نظر)</span>
+        <div class="comments-summary" style="margin-bottom:20px; display:flex; align-items:center; gap:10px;">
+          <div class="stars-display" style="display:flex; direction:ltr;">
+            {% for i in "12345" %}
+            <span class="star {% if forloop.counter <= object.avg_rate %}star-filled{% else %}star-empty{% endif %}"
+              style="font-size:20px; {% if forloop.counter <= object.avg_rate %}color:#FFC107;{% else %}color:#d9d9d9;{% endif %}">★</span>
+            {% endfor %}
+          </div>
+          <span style="font-size:14px; color:#666;">
+            ({{ object.avg_rate|default:"0" }} از 5 / {{ object.product_review.count }} نظر)
+          </span>
         </div>
 
         <div class="comments-list">
-
+          {% for review in object.product_review.all %}
+          {% if review.status == "accepted" %}
           <div class="comment-item" style="border-bottom:1px solid #eee; padding:16px 0;">
             <div class="comment-header" style="display:flex; justify-content:space-between; align-items:center;">
-              <strong>نام کاربر</strong>
-              <span class="stars">★★★★★</span>
+              <strong>{{ review.user.user_profile.fullname }}</strong>
+              <div class="stars-display" style="display:flex; direction:ltr;">
+                {% for i in "12345" %}
+                <span class="star"
+                  style="font-size:16px; {% if forloop.counter <= review.rate %}color:#FFC107;{% else %}color:#d9d9d9;{% endif %}">★</span>
+                {% endfor %}
+              </div>
             </div>
-            <p class="comment-text" style="margin:8px 0 4px;">
-              متن دیدگاه کاربر درباره محصول اینجا نمایش داده می‌شود.
-            </p>
-            <span class="comment-date" style="font-size:12px; color:#999;">۱۴ مهر ۱۴۰۳</span>
+            <p class="comment-text" style="margin:8px 0 4px;">{{ review.description }}</p>
+            <span class="comment-date" style="font-size:12px; color:#999;">{{ review.created_date|date:"j F Y" }}</span>
           </div>
-
-          <div class="comment-item" style="border-bottom:1px solid #eee; padding:16px 0;">
-            <div class="comment-header" style="display:flex; justify-content:space-between; align-items:center;">
-              <strong>نام کاربر</strong>
-              <span class="stars">★★★☆☆</span>
-            </div>
-            <p class="comment-text" style="margin:8px 0 4px;">
-              متن دیدگاه کاربر درباره محصول اینجا نمایش داده می‌شود.
-            </p>
-            <span class="comment-date" style="font-size:12px; color:#999;">۱۰ مهر ۱۴۰۳</span>
-          </div>
-
+          {% endif %}
+          {% empty %}
+          <p>هنوز نظری برای این محصول ثبت نشده است. اولین نفری باشید که نظر می‌دهد!</p>
+          {% endfor %}
         </div>
-
-        <!-- حالت خالی بودن کامنت‌ها -->
-        <!--
-  <p>هنوز نظری برای این محصول ثبت نشده است. اولین نفری باشید که نظر می‌دهد!</p>
-  -->
 
         <!-- ADD COMMENT FORM -->
         <div class="add-comment-form" style="margin-top:30px;">
           <h4>ثبت دیدگاه شما</h4>
 
-          <form method="post" action="">
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'review:submit_review' %}">
+            {% csrf_token %}
+            <input type="hidden" name="product" value="{{ object.id }}">
 
             <div class="rating-input" style="margin-bottom:16px;">
               <div class="size-label">امتیاز شما به این محصول</div>
               <div class="stars-select"
-                style="display:flex; flex-direction:row-reverse; justify-content:flex-end; gap:4px; font-size:26px; cursor:pointer;">
-                <label>
-                  <input type="radio" name="rating" value="5" style="display:none;">
-                  <span class="star-icon" data-val="5">★</span>
+                style="display:flex; flex-direction:row-reverse; justify-content:flex-end; gap:4px; font-size:28px; cursor:pointer; direction:ltr;">
+                {% for i in "54321" %}
+                <label style="margin:0;">
+                  <input type="radio" name="rate" value="{{ i }}" style="display:none;" required>
+                  <span class="star-icon" data-val="{{ i }}" style="color:#d9d9d9; transition:color 0.15s;"
+                    onmouseover="const v=parseInt(this.dataset.val); document.querySelectorAll('.stars-select .star-icon').forEach(function(s){ s.style.color = parseInt(s.dataset.val) <= v ? '#FFC107' : '#d9d9d9'; });"
+                    onclick="const v=parseInt(this.dataset.val); document.querySelectorAll('.stars-select .star-icon').forEach(function(s){ s.dataset.active = parseInt(s.dataset.val) <= v ? '1' : '0'; s.style.color = s.dataset.active === '1' ? '#FFC107' : '#d9d9d9'; });">★</span>
                 </label>
-                <label>
-                  <input type="radio" name="rating" value="4" style="display:none;">
-                  <span class="star-icon" data-val="4">★</span>
-                </label>
-                <label>
-                  <input type="radio" name="rating" value="3" style="display:none;">
-                  <span class="star-icon" data-val="3">★</span>
-                </label>
-                <label>
-                  <input type="radio" name="rating" value="2" style="display:none;">
-                  <span class="star-icon" data-val="2">★</span>
-                </label>
-                <label>
-                  <input type="radio" name="rating" value="1" style="display:none;">
-                  <span class="star-icon" data-val="1">★</span>
-                </label>
+                {% endfor %}
               </div>
             </div>
 
             <div class="comment-text-input" style="margin-bottom:16px;">
-              <textarea name="text" rows="4" placeholder="نظر خود را درباره این محصول بنویسید..."
-                style="width:100%; padding:10px;"></textarea>
+              <label for="review-description" style="display:block; margin-bottom:8px; font-weight:500; color:#333;">
+                متن دیدگاه شما
+              </label>
+              <textarea id="review-description" name="description" rows="5"
+                placeholder="تجربه خودتون از استفاده این محصول رو با ما در میون بذارید..." style="width:100%;
+                 padding:14px 16px;
+                 border:1.5px solid #e0e0e0;
+                 border-radius:12px;
+                 font-family:inherit;
+                 font-size:14px;
+                 line-height:1.8;
+                 resize:vertical;
+                 min-height:120px;
+                 background:#fafafa;
+                 transition:border-color 0.2s, background 0.2s;
+                 outline:none;" onfocus="this.style.borderColor='#FFC107'; this.style.background='#fff';"
+                onblur="this.style.borderColor='#e0e0e0'; this.style.background='#fafafa';" required></textarea>
             </div>
 
             <button type="submit" class="btn btn-primary">ثبت دیدگاه</button>
           </form>
-
-          <!-- حالت لاگین نبودن کاربر -->
-          <!--
-    <p>
-      برای ثبت دیدگاه و امتیاز، لطفا ابتدا <a href="#">وارد حساب کاربری</a> خود شوید.
-    </p>
-    -->
+          {% else %}
+          <p>
+            برای ثبت دیدگاه و امتیاز، لطفا ابتدا
+            <a href="{% url 'accounts:login' %}">وارد حساب کاربری</a> خود شوید.
+          </p>
+          {% endif %}
         </div>
       </div>
       <!-- /COMMENTS & RATING -->
-    </div>
-
-    <div class="tab-panel" data-panel="size">
-      <table class="size-table">
-        <tr>
-          <th>سایز</th>
-          <th>دور یقه</th>
-          <th>دور سینه</th>
-          <th>طول آستین</th>
-        </tr>
-        <tr>
-          <td>S</td>
-          <td>۳۸-۳۹</td>
-          <td>۹۲-۹۶</td>
-          <td>۶۲</td>
-        </tr>
-        <tr>
-          <td>M</td>
-          <td>۴۰-۴۱</td>
-          <td>۹۷-۱۰۱</td>
-          <td>۶۴</td>
-        </tr>
-        <tr>
-          <td>L</td>
-          <td>۴۲-۴۳</td>
-          <td>۱۰۲-۱۰۶</td>
-          <td>۶۶</td>
-        </tr>
-        <tr>
-          <td>XL</td>
-          <td>۴۴-۴۵</td>
-          <td>۱۰۷-۱۱۲</td>
-          <td>۶۸</td>
-        </tr>
-      </table>
     </div>
 
     {% show_similar_products object %}
