@@ -67,66 +67,64 @@
 
         <!-- ADD TO CART FORM -->
         <!--<form method="post" action="">-->
-          <!-- csrf_token رو اینجا بذار -->
+        <!-- csrf_token رو اینجا بذار -->
 
-          <!-- رنگ‌ها — اینجا for بزن روی product.colors -->
-          <div class="size-row">
-            <div class="size-label">انتخاب رنگ</div>
-          </div>
-          <div class="color-options" style="margin-bottom:20px;">
-            {% for color in colors %}
-            <label title="{{color.name}}">
-              <input type="radio" name="color" value="{{color.id}}" style="display:none;">
-              <span class="swatch {% if request.GET.color == color.id|stringformat:'s' %}active{% endif %}" style="background-color: {{ color.code }}; width:26px; height:26px;" 
-                onclick="document.querySelectorAll('.color-options .swatch').forEach(s => s.classList.remove('active'));
+        <!-- رنگ‌ها — اینجا for بزن روی product.colors -->
+        <div class="size-row">
+          <div class="size-label">انتخاب رنگ</div>
+        </div>
+        <div class="color-options" style="margin-bottom:20px;">
+          {% for color in colors %}
+          <label title="{{color.name}}">
+            <input type="radio" name="color" value="{{color.id}}" style="display:none;">
+            <span class="swatch {% if request.GET.color == color.id|stringformat:'s' %}active{% endif %}"
+              style="background-color: {{ color.code }}; width:26px; height:26px;" onclick="document.querySelectorAll('.color-options .swatch').forEach(s => s.classList.remove('active'));
                   this.classList.add('active'); 
                   const url = new window.URL(window.location.href);
                   url.searchParams.set('color', this.previousElementSibling.value);
                   window.location.href = url.toString();">
-              </span>
-            </label>
-            {% endfor %}
-          </div>
+            </span>
+          </label>
+          {% endfor %}
+        </div>
 
-          <!-- سایزها — اینجا for بزن روی product.sizes -->
-          <div class="size-row">
-            <div class="size-label">انتخاب سایز</div>
-            <a href="blog-post.html?slug=size-guide" class="size-guide-link">راهنمای سایزبندی</a>
-          </div>
-          <div class="size-options" style="margin-bottom:22px;">
-            {% for size in sizes %}
-            <button type="button" class="{% if request.GET.size == size.id|stringformat:'s'%}active{% endif %}"
-              onclick="document.querySelectorAll('.size-options button').forEach(b=>b.classList.remove('active'));this.classList.add('active');
+        <!-- سایزها — اینجا for بزن روی product.sizes -->
+        <div class="size-row">
+          <div class="size-label">انتخاب سایز</div>
+          <a href="blog-post.html?slug=size-guide" class="size-guide-link">راهنمای سایزبندی</a>
+        </div>
+        <div class="size-options" style="margin-bottom:22px;">
+          {% for size in sizes %}
+          <button type="button" class="{% if request.GET.size == size.id|stringformat:'s'%}active{% endif %}" onclick="document.querySelectorAll('.size-options button').forEach(b=>b.classList.remove('active'));this.classList.add('active');
               const url = new window.URL(window.location.href);
               url.searchParams.set('size', this.dataset.size);
-              window.location.href = url.toString();"
-              data-size="{{size.id}}">{{size.name}}</button>
-            <input type="hidden" name="size" id="size-input" value="{{size.name}}">
-            {% endfor %}
-          </div>
+              window.location.href = url.toString();" data-size="{{size.id}}">{{size.name}}</button>
+          <input type="hidden" name="size" id="size-input" value="{{size.name}}">
+          {% endfor %}
+        </div>
 
-          <!-- تعداد + افزودن به سبد -->
-          {% if variant %}
-            {% if variant.stock > 0 %}
-            <div class="qty-add-row">
-              <button type="submit" class="btn btn-primary" onclick="AddToCart('{{variant.id}}')" style="flex:1;">
-                افزودن به سبد خرید
-              </button>
-            </div>
-            {% else %}
-            <div class="qty-add-row">
-              <button class="btn btn-outline-dange" disabled style="flex:1;">
-               موجودی کالا به اتمام رسیده است
-              </button>
-            </div>
-            {% endif %}
-          {% else %}
-            <div class="qty-add-row">
-              <button class="btn btn-outline-dange" disabled style="flex:1;">
-              لطفا رنگ و سایز را انتخاب کنید
-              </button>
-            </div>
-          {% endif %}
+        <!-- تعداد + افزودن به سبد -->
+        {% if variant %}
+        {% if variant.stock > 0 %}
+        <div class="qty-add-row">
+          <button type="submit" class="btn btn-primary" onclick="AddToCart('{{variant.id}}')" style="flex:1;">
+            افزودن به سبد خرید
+          </button>
+        </div>
+        {% else %}
+        <div class="qty-add-row">
+          <button class="btn btn-outline-dange" disabled style="flex:1;">
+            موجودی کالا به اتمام رسیده است
+          </button>
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="qty-add-row">
+          <button class="btn btn-outline-dange" disabled style="flex:1;">
+            لطفا رنگ و سایز را انتخاب کنید
+          </button>
+        </div>
+        {% endif %}
 
         <!--</form>-->
         <!-- /FORM -->
@@ -145,7 +143,7 @@
     <!-- TABS -->
     <div class="tabs-bar">
       <button class="tab-btn active" data-tab="desc">توضیحات</button>
-      <button class="tab-btn" data-tab="care">نگهداری</button>
+      <button class="tab-btn" data-tab="care">دیدگاه‌ها</button>
       <button class="tab-btn" data-tab="size">جدول سایز</button>
     </div>
 
@@ -154,7 +152,96 @@
     </div>
 
     <div class="tab-panel" data-panel="care">
-      <p>نحوهٔ نگهداری محصول اینجا نمایش داده می‌شود.</p>
+      <!-- COMMENTS & RATING -->
+      <div class="comments-section" style="margin-top:40px;">
+        <h3>دیدگاه‌ها و امتیاز کاربران</h3>
+
+        <div class="comments-summary" style="margin-bottom:20px;">
+          <span class="stars">★★★★☆</span>
+          <span>(۴.۲ از ۵ · ۱۲ نظر)</span>
+        </div>
+
+        <div class="comments-list">
+
+          <div class="comment-item" style="border-bottom:1px solid #eee; padding:16px 0;">
+            <div class="comment-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>نام کاربر</strong>
+              <span class="stars">★★★★★</span>
+            </div>
+            <p class="comment-text" style="margin:8px 0 4px;">
+              متن دیدگاه کاربر درباره محصول اینجا نمایش داده می‌شود.
+            </p>
+            <span class="comment-date" style="font-size:12px; color:#999;">۱۴ مهر ۱۴۰۳</span>
+          </div>
+
+          <div class="comment-item" style="border-bottom:1px solid #eee; padding:16px 0;">
+            <div class="comment-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <strong>نام کاربر</strong>
+              <span class="stars">★★★☆☆</span>
+            </div>
+            <p class="comment-text" style="margin:8px 0 4px;">
+              متن دیدگاه کاربر درباره محصول اینجا نمایش داده می‌شود.
+            </p>
+            <span class="comment-date" style="font-size:12px; color:#999;">۱۰ مهر ۱۴۰۳</span>
+          </div>
+
+        </div>
+
+        <!-- حالت خالی بودن کامنت‌ها -->
+        <!--
+  <p>هنوز نظری برای این محصول ثبت نشده است. اولین نفری باشید که نظر می‌دهد!</p>
+  -->
+
+        <!-- ADD COMMENT FORM -->
+        <div class="add-comment-form" style="margin-top:30px;">
+          <h4>ثبت دیدگاه شما</h4>
+
+          <form method="post" action="">
+
+            <div class="rating-input" style="margin-bottom:16px;">
+              <div class="size-label">امتیاز شما به این محصول</div>
+              <div class="stars-select"
+                style="display:flex; flex-direction:row-reverse; justify-content:flex-end; gap:4px; font-size:26px; cursor:pointer;">
+                <label>
+                  <input type="radio" name="rating" value="5" style="display:none;">
+                  <span class="star-icon" data-val="5">★</span>
+                </label>
+                <label>
+                  <input type="radio" name="rating" value="4" style="display:none;">
+                  <span class="star-icon" data-val="4">★</span>
+                </label>
+                <label>
+                  <input type="radio" name="rating" value="3" style="display:none;">
+                  <span class="star-icon" data-val="3">★</span>
+                </label>
+                <label>
+                  <input type="radio" name="rating" value="2" style="display:none;">
+                  <span class="star-icon" data-val="2">★</span>
+                </label>
+                <label>
+                  <input type="radio" name="rating" value="1" style="display:none;">
+                  <span class="star-icon" data-val="1">★</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="comment-text-input" style="margin-bottom:16px;">
+              <textarea name="text" rows="4" placeholder="نظر خود را درباره این محصول بنویسید..."
+                style="width:100%; padding:10px;"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">ثبت دیدگاه</button>
+          </form>
+
+          <!-- حالت لاگین نبودن کاربر -->
+          <!--
+    <p>
+      برای ثبت دیدگاه و امتیاز، لطفا ابتدا <a href="#">وارد حساب کاربری</a> خود شوید.
+    </p>
+    -->
+        </div>
+      </div>
+      <!-- /COMMENTS & RATING -->
     </div>
 
     <div class="tab-panel" data-panel="size">

@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'order',
     'payment',
     'blog',
+    'review',
 
     "captcha", 
 ]
